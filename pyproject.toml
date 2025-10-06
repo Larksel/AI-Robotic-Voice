@@ -1,0 +1,9 @@
+[project]
+name = "ai-robotic-voice"
+version = "0.1.0"
+description = "Repositório para testar geração de áudio a partir de texto com modelos locais e aplicação de efeitos em tempo real."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "piper-tts>=1.3.0",
+]
