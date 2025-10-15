@@ -48,6 +48,7 @@ if __name__ == "__main__":
         print("Pressione Ctrl+C para parar.\n\n")
         while True:
             text = get_user_input()
+            text = text.replace('.', ',') # Evita pausas longas
             if text.lower() in ["sair", "exit", "quit"]:
                 break
             speak_stream(text)
