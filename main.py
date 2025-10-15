@@ -6,13 +6,6 @@ import numpy as np
 
 # * O modelo deve ser baixado com python -m piper.download_voices pt_BR-cadu-medium
 
-TAXA_DE_AMOSTRAGEM = 44100
-DURACAO_CHUNK = 0.1
-VOLUME = 0.5
-TAMANHO_CHUNK = int(DURACAO_CHUNK * TAXA_DE_AMOSTRAGEM)
-# Variável para manter a fase da onda entre chunks e evitar "cliques"
-fase_atual = 0
-
 # Carrega o modelo de voz
 voice = PiperVoice.load("./pt_BR-cadu-medium.onnx")
 output_file_path = "saida_piper.wav"
@@ -42,23 +35,22 @@ def speak_stream(text: str):
     # For streaming, use PiperVoice.synthesize
     for chunk in voice.synthesize(text):
         # Loop principal: pega um chunk do gerador e escreve no stream
-        #set_audio_format(chunk.sample_rate, chunk.sample_width, chunk.sample_channels)
-        # write_raw_data(chunk.audio_int16_bytes)
+        audio_data = np.frombuffer(chunk.audio_int16_bytes, dtype=np.int16)
         with sd.OutputStream(
-            samplerate=chunk.sample_rate, channels=1
+            samplerate=chunk.sample_rate, channels=chunk.sample_channels, dtype="int16"
         ) as stream:
-            stream.write(chunk.audio_int16_bytes)
+            stream.write(audio_data)
 
 
 if __name__ == "__main__":
     try:
         print("Iniciando a reprodução de áudio em stream...")
-        print("Pressione Ctrl+C para parar.")
+        print("Pressione Ctrl+C para parar.\n\n")
         while True:
             text = get_user_input()
             if text.lower() in ["sair", "exit", "quit"]:
                 break
-            speak(text)
+            speak_stream(text)
     except KeyboardInterrupt:
         print("\nReprodução interrompida pelo usuário.")
     except Exception as e:
